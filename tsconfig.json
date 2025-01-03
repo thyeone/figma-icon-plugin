@@ -7,7 +7,7 @@
       "./node_modules/@figma",
       "src/@types"
     ],
-    "jsx": "react",
+    "jsx": "react-jsx",
     "esModuleInterop": true,
     "moduleResolution": "node"
   },
