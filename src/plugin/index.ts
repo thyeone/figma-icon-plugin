@@ -1,1 +1,3 @@
-figma.showUI(__html__);
+figma.showUI(__html__, {
+  height: 230,
+});
