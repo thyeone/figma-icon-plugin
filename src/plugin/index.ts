@@ -1,4 +1,9 @@
-import type { ExtractIconPluginMessage, PluginMessage } from './type';
+import type {
+  ExtractIconPluginMessage,
+  GetTokenPluginMessage,
+  PluginMessage,
+  UIMessage,
+} from './type';
 import { findAllComponentNode, flatten } from './utils';
 
 figma.showUI(__html__, {
@@ -24,3 +29,24 @@ function extractIcon() {
 
   figma.ui.postMessage(pluginMessage);
 }
+
+figma.ui.onmessage = async (msg: UIMessage) => {
+  if (msg.type === 'extract') {
+    extractIcon();
+  }
+
+  if (msg.type === 'getToken') {
+    const token = await figma.clientStorage.getAsync('token');
+
+    const pluginMessage: GetTokenPluginMessage = {
+      type: 'getToken',
+      payload: token,
+    };
+
+    figma.ui.postMessage(pluginMessage);
+  }
+
+  if (msg.type === 'setToken') {
+    await figma.clientStorage.setAsync('token', msg.payload);
+  }
+};

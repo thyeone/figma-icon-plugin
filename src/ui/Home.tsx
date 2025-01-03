@@ -20,6 +20,9 @@ export default function Home() {
   const [isFigmaVisible, setIsFigmaVisible] = useState(false);
   const [isBitbucketVisible, setIsBitbucketVisible] = useState(false);
 
+  const [figmaToken, setFigmaToken] = useState('');
+  const [bitbucketToken, setBitbucketToken] = useState('');
+
   const [step, setStep] = useState(Step.Pending);
 
   const [exportPath, setExportPath] = useState('');
@@ -43,6 +46,8 @@ export default function Home() {
           size="xs"
           rounded="md"
           placeholder="Enter your Figma token"
+          value={figmaToken}
+          onChange={(e) => setFigmaToken(e.target.value)}
         />
         {isFigmaVisible ? (
           <ViewIcon
@@ -73,6 +78,8 @@ export default function Home() {
           size="xs"
           rounded="md"
           placeholder="Enter your Bitbucket token"
+          value={bitbucketToken}
+          onChange={(e) => setBitbucketToken(e.target.value)}
         />
         {isBitbucketVisible ? (
           <ViewIcon
@@ -116,7 +123,9 @@ export default function Home() {
           </Button>
         </Flex>
       )}
-      {step === Step.Processing && <Progress />}
+      {step === Step.Processing && (
+        <Progress figmaToken={figmaToken} bitbucketToken={bitbucketToken} />
+      )}
     </Box>
   );
 }
