@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   Button,
@@ -9,6 +9,7 @@ import {
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import Progress from './Progress';
+import { PluginMessage } from '../plugin/type';
 
 enum Step {
   Pending,
@@ -35,6 +36,17 @@ export default function Home() {
     parent.postMessage({ pluginMessage: { type: 'extract' } }, '*');
   };
 
+  useEffect(() => {
+    window.onmessage = async (event: MessageEvent<PluginMessage>) => {
+      const { type, payload } = event.data.pluginMessage;
+
+      if (type === 'getToken') {
+        setFigmaToken(payload?.figmaToken ?? '');
+        setBitbucketToken(payload?.bitbucketToken ?? '');
+      }
+    };
+  }, []);
+
   return (
     <Box p="16px">
       <Text fontSize="12px" mb="6px">
@@ -45,6 +57,7 @@ export default function Home() {
           type={isFigmaVisible ? 'text' : 'password'}
           size="xs"
           rounded="md"
+          pr="28px"
           placeholder="Enter your Figma token"
           value={figmaToken}
           onChange={(e) => setFigmaToken(e.target.value)}
@@ -77,6 +90,7 @@ export default function Home() {
           type={isBitbucketVisible ? 'text' : 'password'}
           size="xs"
           rounded="md"
+          pr="28px"
           placeholder="Enter your Bitbucket token"
           value={bitbucketToken}
           onChange={(e) => setBitbucketToken(e.target.value)}
@@ -124,7 +138,13 @@ export default function Home() {
         </Flex>
       )}
       {step === Step.Processing && (
-        <Progress figmaToken={figmaToken} bitbucketToken={bitbucketToken} />
+        <Progress
+          figmaToken={figmaToken}
+          bitbucketToken={bitbucketToken}
+          onError={() => {
+            setStep(Step.Pending);
+          }}
+        />
       )}
     </Box>
   );

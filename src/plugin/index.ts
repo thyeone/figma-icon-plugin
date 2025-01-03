@@ -2,6 +2,7 @@ import type {
   ExtractIconPluginMessage,
   GetTokenPluginMessage,
   PluginMessage,
+  SvgByName,
   UIMessage,
 } from './type';
 import { findAllComponentNode, flatten } from './utils';
@@ -10,20 +11,42 @@ figma.showUI(__html__, {
   height: 230,
 });
 
-function extractIcon() {
+async function extractIcon() {
   const componentNodes = figma.currentPage.selection
     .map(findAllComponentNode)
-    .reduce(flatten, [])
-    .map(({ id, name }) => ({ id, name }));
+    .flatMap((v) => v);
 
-  const componentNodesIdsQuery = componentNodes.map(({ id }) => id).join(',');
+  const svgs = await Promise.all(
+    componentNodes.map(async (node) => {
+      try {
+        const svg = await node.exportAsync({ format: 'SVG' });
+        const id = node.name;
+        return {
+          svg,
+          id,
+        };
+      } catch (e) {
+        /* eslint-disable no-console */
+        console.log(e);
+        console.log(node);
+        /* eslint-enable no-console */
+        return undefined;
+      }
+    }),
+  );
+
+  const svgByName = svgs.reduce((acc, cur) => {
+    if (!cur?.id) {
+      return acc;
+    }
+    acc[cur.id] = cur;
+    return acc;
+  }, {} as SvgByName);
 
   const pluginMessage: ExtractIconPluginMessage = {
     type: 'extractIcon',
     payload: {
-      fileKey: figma.fileKey as string,
-      ids: componentNodesIdsQuery,
-      nodes: componentNodes,
+      svgByName,
     },
   };
 
