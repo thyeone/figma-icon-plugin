@@ -71,7 +71,7 @@ export default function Home() {
         size="xs"
         rounded="md"
         pr="28px"
-        placeholder="Enter your Bitbucket token"
+        placeholder="Enter your Bitbucket Username"
         value={username}
         onChange={(e) => setUsername(e.target.value)}
       />
@@ -82,7 +82,7 @@ export default function Home() {
         size="xs"
         rounded="md"
         pr="28px"
-        placeholder="Enter your Bitbucket token"
+        placeholder="Enter your Bitbucket Repository Name"
         value={repositoryName}
         onChange={(e) => setRepositoryName(e.target.value)}
       />
