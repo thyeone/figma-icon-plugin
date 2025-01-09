@@ -1,11 +1,10 @@
 import type {
   ExtractIconPluginMessage,
   GetTokenPluginMessage,
-  PluginMessage,
   SvgByName,
   UIMessage,
 } from './type';
-import { findAllComponentNode, flatten } from './utils';
+import { findAllComponentNode } from './utils';
 
 figma.showUI(__html__, {
   height: 330,
