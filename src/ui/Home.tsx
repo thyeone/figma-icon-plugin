@@ -18,12 +18,11 @@ enum Step {
 }
 
 export default function Home() {
-  const [isFigmaVisible, setIsFigmaVisible] = useState(false);
   const [isBitbucketVisible, setIsBitbucketVisible] = useState(false);
 
-  const [figmaToken, setFigmaToken] = useState('');
   const [bitbucketToken, setBitbucketToken] = useState('');
-
+  const [username, setUsername] = useState('');
+  const [repositoryName, setRepositoryName] = useState('');
   const [step, setStep] = useState(Step.Pending);
 
   const [exportPath, setExportPath] = useState('');
@@ -41,7 +40,6 @@ export default function Home() {
       const { type, payload } = event.data.pluginMessage;
 
       if (type === 'getToken') {
-        setFigmaToken(payload?.figmaToken ?? '');
         setBitbucketToken(payload?.bitbucketToken ?? '');
       }
     };
@@ -49,39 +47,28 @@ export default function Home() {
 
   return (
     <Box p="16px">
-      <Text fontSize="12px" mb="6px">
-        Figma Token
+      <Text fontSize="12px" mb="6px" mt="12px">
+        Username
       </Text>
-      <Box position="relative">
-        <Input
-          type={isFigmaVisible ? 'text' : 'password'}
-          size="xs"
-          rounded="md"
-          pr="28px"
-          placeholder="Enter your Figma token"
-          value={figmaToken}
-          onChange={(e) => setFigmaToken(e.target.value)}
-        />
-        {isFigmaVisible ? (
-          <ViewIcon
-            position="absolute"
-            right="8px"
-            top="50%"
-            transform="translateY(-50%)"
-            cursor="pointer"
-            onClick={() => setIsFigmaVisible(false)}
-          />
-        ) : (
-          <ViewOffIcon
-            position="absolute"
-            right="8px"
-            top="50%"
-            transform="translateY(-50%)"
-            cursor="pointer"
-            onClick={() => setIsFigmaVisible(true)}
-          />
-        )}
-      </Box>
+      <Input
+        size="xs"
+        rounded="md"
+        pr="28px"
+        placeholder="Enter your Bitbucket token"
+        value={username}
+        onChange={(e) => setUsername(e.target.value)}
+      />
+      <Text fontSize="12px" mb="6px" mt="12px">
+        Repository Name
+      </Text>
+      <Input
+        size="xs"
+        rounded="md"
+        pr="28px"
+        placeholder="Enter your Bitbucket token"
+        value={repositoryName}
+        onChange={(e) => setRepositoryName(e.target.value)}
+      />
       <Text fontSize="12px" mb="6px" mt="12px">
         Bitbucket Token
       </Text>
@@ -139,8 +126,9 @@ export default function Home() {
       )}
       {step === Step.Processing && (
         <Progress
-          figmaToken={figmaToken}
           bitbucketToken={bitbucketToken}
+          username={username}
+          repositoryName={repositoryName}
           onError={() => {
             setStep(Step.Pending);
           }}
