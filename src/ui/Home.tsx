@@ -65,7 +65,7 @@ export default function Home() {
   return (
     <Box p="16px">
       <Text fontSize="12px" mb="6px" mt="12px">
-        Username
+        Usernam
       </Text>
       <Input
         size="xs"
