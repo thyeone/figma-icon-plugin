@@ -34,6 +34,8 @@ export default function Progress({
       const { type, payload } = event.data.pluginMessage;
       const bitbucketApi = new BitbucketApi();
 
+      console.log(payload, 'payload');
+
       setProgress((prev) => prev + 30);
 
       try {
@@ -70,6 +72,7 @@ export default function Progress({
         }
       } catch (error) {
         onError();
+        console.error(error);
       }
     };
   }, []);

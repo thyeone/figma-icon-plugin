@@ -62,8 +62,6 @@ export default function Home() {
     }
   }, [isError]);
 
-  console.log(exportPath);
-
   return (
     <Box p="16px">
       <Text fontSize="12px" mb="6px" mt="12px">
