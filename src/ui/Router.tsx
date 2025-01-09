@@ -1,18 +1,16 @@
-import { createMemoryRouter, RouterProvider } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import Home from './Home';
 import Success from './Success';
 
-const router = createMemoryRouter([
-  {
-    path: '/',
-    element: <Home />,
-  },
-  {
-    path: '/success',
-    element: <Success />,
-  },
-]);
-
-const Router = () => <RouterProvider router={router} />;
+const Router = () => {
+  return (
+    <MemoryRouter>
+      <Routes>
+        <Route index element={<Home />} />
+        <Route path="/success" element={<Success />} />
+      </Routes>
+    </MemoryRouter>
+  );
+};
 
 export default Router;

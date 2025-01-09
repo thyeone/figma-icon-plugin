@@ -5,9 +5,11 @@ import {
   ChakraProvider,
   Flex,
   Input,
+  Spacer,
   Text,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { Progress as ProgressBar } from '@chakra-ui/react';
 import Progress from './Progress';
 import { PluginMessage } from '../plugin/type';
 

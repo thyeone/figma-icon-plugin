@@ -12,7 +12,7 @@ type createBranchParams = {
 type CreateCommitParams = {
   repositoryName: string;
   username: string;
-  branch?: string;
+  branch: string;
   token: string;
   svgs: SvgByName;
 };
@@ -72,20 +72,13 @@ class BitbucketApi {
   public async createCommitWithSvg({
     repositoryName,
     username,
-    branch = `svg/${dayjs().format('YYYY-MM-DD-HHmm')}`,
+    branch,
     token,
     svgs,
   }: CreateCommitParams): Promise<{
     sourceBranch: string;
     success: boolean;
   }> {
-    const branchResponse = await this.createBranch({
-      repositoryName,
-      token,
-      username,
-      branch,
-    });
-
     /**
      * key: svg 파일이름
      * value: svg 코드
@@ -100,7 +93,7 @@ class BitbucketApi {
 
     const formData = new FormData();
 
-    formData.append('branch', branchResponse.name);
+    formData.append('branch', branch);
     formData.append('message', 'svg 생성');
 
     Object.entries(svgFiles).forEach(([filename, svgContent]) => {
@@ -120,7 +113,7 @@ class BitbucketApi {
     );
 
     return {
-      sourceBranch: branchResponse.name,
+      sourceBranch: branch,
       success: commitResponse.ok,
     };
   }
