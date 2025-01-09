@@ -7,6 +7,7 @@ import {
   Input,
   Spacer,
   Text,
+  useToast,
 } from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
 import { Progress as ProgressBar } from '@chakra-ui/react';
@@ -26,12 +27,16 @@ export default function Home() {
   const [username, setUsername] = useState('');
   const [repositoryName, setRepositoryName] = useState('');
   const [step, setStep] = useState(Step.Pending);
+  const [isError, setIsError] = useState(false);
 
   const [exportPath, setExportPath] = useState('');
+
+  const toast = useToast();
 
   const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
+    setIsError(false);
     setStep(Step.Processing);
 
     parent.postMessage({ pluginMessage: { type: 'extract' } }, '*');
@@ -46,6 +51,16 @@ export default function Home() {
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (isError) {
+      toast({
+        title: '에러가 발생했어요.',
+        position: 'top',
+        status: 'error',
+      });
+    }
+  }, [isError]);
 
   return (
     <Box p="16px">
@@ -133,6 +148,7 @@ export default function Home() {
           repositoryName={repositoryName}
           onError={() => {
             setStep(Step.Pending);
+            setIsError(true);
           }}
         />
       )}

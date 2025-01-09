@@ -30,39 +30,43 @@ export default function Progress({
   useEffect(() => {
     window.onmessage = async (event: MessageEvent<PluginMessage>) => {
       const { type, payload } = event.data.pluginMessage;
-
       const bitbucketApi = new BitbucketApi();
 
       setProgress((prev) => prev + 30);
 
-      const branch = await bitbucketApi.createBranch({
-        repositoryName,
-        token: bitbucketToken,
-        username,
-      });
-
-      setProgress((prev) => prev + 30);
-
-      const { sourceBranch, success } = await bitbucketApi.createCommitWithSvg({
-        repositoryName,
-        token: bitbucketToken,
-        username,
-        branch: branch.name,
-        svgs: type === 'extractIcon' ? payload.svgByName : {},
-      });
-
-      if (success) {
-        setProgress((prev) => prev + 25);
-        const { links } = await bitbucketApi.createPullRequest({
+      try {
+        const branch = await bitbucketApi.createBranch({
           repositoryName,
           token: bitbucketToken,
           username,
-          sourceBranch,
         });
 
-        if (links.html.href) {
-          navigate('/success', { state: links.html.href });
+        setProgress((prev) => prev + 30);
+
+        const { sourceBranch, success } =
+          await bitbucketApi.createCommitWithSvg({
+            repositoryName,
+            token: bitbucketToken,
+            username,
+            branch: branch.name,
+            svgs: type === 'extractIcon' ? payload.svgByName : {},
+          });
+
+        if (success) {
+          setProgress((prev) => prev + 25);
+          const { links } = await bitbucketApi.createPullRequest({
+            repositoryName,
+            token: bitbucketToken,
+            username,
+            sourceBranch,
+          });
+
+          if (links.html.href) {
+            navigate('/success', { state: links.html.href });
+          }
         }
+      } catch (error) {
+        onError();
       }
     };
   }, []);
