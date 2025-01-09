@@ -40,7 +40,7 @@ class BitbucketApi {
   public async createBranch({
     repositoryName,
     username,
-    branch = `svg/${dayjs().format('YYYY-MM-DD-HHmm')}`,
+    branch = `svg/${dayjs().format('YYYY-MM-DD-HHmmss')}`,
     token,
   }: createBranchParams): Promise<{ name: string }> {
     const response = await fetch(
