@@ -1,3 +1,4 @@
+import dayjs from 'dayjs';
 import type { SvgByName } from '../plugin/type';
 
 type createBranchParams = {
@@ -29,7 +30,7 @@ class BitbucketApi {
   public async createBranch({
     repositoryName,
     username,
-    branch = `svg/${Date.now()}`,
+    branch = `svg/${dayjs().format('YYYY-MM-DD-H:mm')}`,
     token,
   }: createBranchParams): Promise<{ name: string }> {
     const response = await fetch(
