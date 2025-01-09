@@ -8,6 +8,7 @@ type ProgressProps = {
   username: string;
   repositoryName: string;
   bitbucketToken: string;
+  exportPath: string;
   onError: VoidFunction;
 };
 
@@ -21,6 +22,7 @@ export default function Progress({
   bitbucketToken,
   username,
   repositoryName,
+  exportPath,
   onError,
 }: ProgressProps) {
   const [progress, setProgress] = useState(0);
@@ -50,6 +52,7 @@ export default function Progress({
             username,
             branch: branch.name,
             svgs: type === 'extractIcon' ? payload.svgByName : {},
+            exportPath,
           });
 
         if (success) {
@@ -79,7 +82,9 @@ export default function Progress({
         colorScheme="green"
         rounded="sm"
       />
-      <Text fontSize="12px">{PROGRESS_TEXT[progress]}</Text>
+      <Text fontSize="12px">
+        {PROGRESS_TEXT[progress as keyof typeof PROGRESS_TEXT]}
+      </Text>
     </Stack>
   );
 }

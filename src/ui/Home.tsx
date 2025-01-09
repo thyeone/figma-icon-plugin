@@ -62,6 +62,8 @@ export default function Home() {
     }
   }, [isError]);
 
+  console.log(exportPath);
+
   return (
     <Box p="16px">
       <Text fontSize="12px" mb="6px" mt="12px">
@@ -124,7 +126,7 @@ export default function Home() {
       </Text>
       <Input
         type="text"
-        defaultValue="src/components/icon"
+        value={exportPath}
         size="xs"
         rounded="md"
         onChange={(e) => setExportPath(e.target.value)}
@@ -146,6 +148,7 @@ export default function Home() {
           bitbucketToken={bitbucketToken}
           username={username}
           repositoryName={repositoryName}
+          exportPath={exportPath}
           onError={() => {
             setStep(Step.Pending);
             setIsError(true);

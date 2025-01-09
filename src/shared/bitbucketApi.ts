@@ -15,6 +15,7 @@ type CreateCommitParams = {
   branch: string;
   token: string;
   svgs: SvgByName;
+  exportPath: string;
 };
 
 type CreatePullRequestParams = {
@@ -30,7 +31,7 @@ class BitbucketApi {
   private workspace: string = 'diffrag';
 
   private formatFileName(id: string): string {
-    return `public/svgs/${id.replace('=', '-')}.svg`;
+    return `${id.replace('=', '-')}.svg`;
   }
 
   private convertSvgDataToString(svgData: Uint8Array): string {
@@ -71,6 +72,7 @@ class BitbucketApi {
 
   public async createCommitWithSvg({
     repositoryName,
+    exportPath,
     username,
     branch,
     token,
@@ -88,17 +90,19 @@ class BitbucketApi {
     for (const [filename, data] of Object.entries(svgs)) {
       const fileName = this.formatFileName(filename);
       const svgString = this.convertSvgDataToString(data.svg);
-      svgFiles[fileName] = svgString;
+      const fullPath = exportPath
+        ? `${exportPath}/${fileName}`
+        : `public/svgs/${fileName}`;
+      svgFiles[fullPath] = svgString;
     }
 
     const formData = new FormData();
-
     formData.append('branch', branch);
     formData.append('message', 'svg 생성');
 
-    Object.entries(svgFiles).forEach(([filename, svgContent]) => {
+    Object.entries(svgFiles).forEach(([filepath, svgContent]) => {
       const blob = new Blob([svgContent], { type: 'image/svg+xml' });
-      formData.append(filename, blob, filename);
+      formData.append(filepath, blob, filepath);
     });
 
     const commitResponse = await fetch(
