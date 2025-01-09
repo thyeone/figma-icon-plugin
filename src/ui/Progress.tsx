@@ -10,7 +10,12 @@ type ProgressProps = {
   onError: VoidFunction;
 };
 
-export default function Progress({ bitbucketToken, onError }: ProgressProps) {
+export default function Progress({
+  bitbucketToken,
+  username,
+  repositoryName,
+  onError,
+}: ProgressProps) {
   const [progress, setProgress] = useState(0);
   const [progressText, setProgressText] = useState('');
 
@@ -20,10 +25,11 @@ export default function Progress({ bitbucketToken, onError }: ProgressProps) {
 
       const bitbucketApi = new BitbucketApi();
 
-      const response = await bitbucketApi.createBranch({
-        workspace: 'diffrag',
-        repoSlug: 'life',
+      const response = await bitbucketApi.createCommitWithSvg({
+        repositoryName,
         token: bitbucketToken,
+        username,
+        svgs: type === 'extractIcon' ? payload.svgByName : {},
       });
 
       console.log(payload, 'payload');

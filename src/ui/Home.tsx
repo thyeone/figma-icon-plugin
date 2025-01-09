@@ -70,7 +70,7 @@ export default function Home() {
         onChange={(e) => setRepositoryName(e.target.value)}
       />
       <Text fontSize="12px" mb="6px" mt="12px">
-        Bitbucket Token
+        Bitbucket App Password
       </Text>
       <Box position="relative">
         <Input

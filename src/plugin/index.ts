@@ -8,7 +8,7 @@ import type {
 import { findAllComponentNode, flatten } from './utils';
 
 figma.showUI(__html__, {
-  height: 230,
+  height: 330,
 });
 
 async function extractIcon() {

@@ -1,4 +1,9 @@
-export type SvgByName = { [id: string]: object };
+export type SvgByName = { [id: string]: SvgData };
+
+type SvgData = {
+  id: string;
+  svg: Uint8Array;
+};
 
 export interface ExtractIconPluginMessage {
   type: 'extractIcon';
