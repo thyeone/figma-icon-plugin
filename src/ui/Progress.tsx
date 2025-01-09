@@ -25,16 +25,25 @@ export default function Progress({
 
       const bitbucketApi = new BitbucketApi();
 
-      const response = await bitbucketApi.createCommitWithSvg({
+      const { sourceBranch, success } = await bitbucketApi.createCommitWithSvg({
         repositoryName,
         token: bitbucketToken,
         username,
         svgs: type === 'extractIcon' ? payload.svgByName : {},
       });
 
-      console.log(payload, 'payload');
-      console.log(response, 'response');
-      console.log('213123');
+      console.log(sourceBranch, success, 'response');
+
+      if (success) {
+        const pullRequestResponse = await bitbucketApi.createPullRequest({
+          repositoryName,
+          token: bitbucketToken,
+          username,
+          sourceBranch,
+        });
+
+        console.log(pullRequestResponse);
+      }
     };
   }, []);
 

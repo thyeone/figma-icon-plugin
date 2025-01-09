@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import type { SvgByName } from '../plugin/type';
+import type { BitbucketPullRequest } from './bitbucket.type';
 
 type createBranchParams = {
   repositoryName: string;
@@ -16,6 +17,15 @@ type CreateCommitParams = {
   svgs: SvgByName;
 };
 
+type CreatePullRequestParams = {
+  repositoryName: string;
+  username: string;
+  sourceBranch: string;
+  title?: string;
+  description?: string;
+  token: string;
+};
+
 class BitbucketApi {
   private workspace: string = 'diffrag';
 
@@ -30,7 +40,7 @@ class BitbucketApi {
   public async createBranch({
     repositoryName,
     username,
-    branch = `svg/${dayjs().format('YYYY-MM-DD-H:mm')}`,
+    branch = `svg/${dayjs().format('YYYY-MM-DD-HHmm')}`,
     token,
   }: createBranchParams): Promise<{ name: string }> {
     const response = await fetch(
@@ -62,14 +72,18 @@ class BitbucketApi {
   public async createCommitWithSvg({
     repositoryName,
     username,
-    branch = `svg/${Date.now()}`,
+    branch = `svg/${dayjs().format('YYYY-MM-DD-HHmm')}`,
     token,
     svgs,
-  }: CreateCommitParams) {
+  }: CreateCommitParams): Promise<{
+    sourceBranch: string;
+    success: boolean;
+  }> {
     const branchResponse = await this.createBranch({
       repositoryName,
       token,
       username,
+      branch,
     });
 
     /**
@@ -86,7 +100,7 @@ class BitbucketApi {
 
     const formData = new FormData();
 
-    formData.append('branch', branch);
+    formData.append('branch', branchResponse.name);
     formData.append('message', 'svg 생성');
 
     Object.entries(svgFiles).forEach(([filename, svgContent]) => {
@@ -105,9 +119,53 @@ class BitbucketApi {
       },
     );
 
-    const data = await commitResponse.json();
+    return {
+      sourceBranch: branchResponse.name,
+      success: commitResponse.ok,
+    };
+  }
 
-    console.log(data, 'commitResponse');
+  public async createPullRequest({
+    repositoryName,
+    username,
+    token,
+    sourceBranch,
+    title = `피그마에서 SVG 파일 추출 ${dayjs().format('YYYY-MM-DD-H:mm')}`,
+    description = `피그마에서 SVG 파일 추출 ${dayjs().format(
+      'YYYY-MM-DD-H:mm',
+    )}`,
+  }: CreatePullRequestParams): Promise<BitbucketPullRequest> {
+    const response = await fetch(
+      `https://api.bitbucket.org/2.0/repositories/${this.workspace}/${repositoryName}/pullrequests`,
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Basic ${btoa(`${username}:${token}`)}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          description,
+          source: {
+            branch: {
+              name: sourceBranch,
+            },
+          },
+          destination: {
+            branch: {
+              name: 'main',
+            },
+          },
+        }),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error('Failed to create pull request');
+    }
+
+    const data = await response.json();
+    return data;
   }
 }
 
