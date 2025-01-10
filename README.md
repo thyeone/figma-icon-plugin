@@ -1,4 +1,4 @@
-<img width="705" alt="image" src="https://github.com/user-attachments/assets/9df5cd1c-5e48-4efc-970c-322539840cf6" /># Figma Icon Plugin
+# Figma Icon Plugin
 피그마에서 선택된 아이콘을 Bitbucket 저장소에 PR을 생성합니다.
 
 ## Usage
