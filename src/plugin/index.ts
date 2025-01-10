@@ -18,7 +18,7 @@ async function extractIcon() {
   const svgs = await Promise.all(
     componentNodes.map(async (node) => {
       try {
-        const svg = await node.exportAsync({ format: 'SVG' });
+        const svg = await node.exportAsync({ format: 'SVG_STRING' });
         const id = node.name;
         return {
           svg,

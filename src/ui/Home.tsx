@@ -1,18 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  ChakraProvider,
-  Flex,
-  Input,
-  Spacer,
-  Text,
-  useToast,
-} from '@chakra-ui/react';
 import { ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
-import { Progress as ProgressBar } from '@chakra-ui/react';
-import Progress from './Progress';
+import { Box, Button, Flex, Input, Text, useToast } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
 import { PluginMessage } from '../plugin/type';
+import Progress from './Progress';
 
 enum Step {
   Pending,

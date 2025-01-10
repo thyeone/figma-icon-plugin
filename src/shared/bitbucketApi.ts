@@ -34,10 +34,6 @@ class BitbucketApi {
     return `${id.replace('=', '-')}.svg`;
   }
 
-  private convertSvgDataToString(svgData: Uint8Array): string {
-    return String.fromCharCode(...Array.from(svgData));
-  }
-
   public async createBranch({
     repositoryName,
     username,
@@ -81,30 +77,24 @@ class BitbucketApi {
     sourceBranch: string;
     success: boolean;
   }> {
-    /**
-     * key: svg 파일이름
-     * value: svg 코드
-     */
-    const svgFiles: { [key: string]: string } = {};
-
-    for (const [filename, data] of Object.entries(svgs)) {
-      const fileName = this.formatFileName(filename);
-      const svgString = this.convertSvgDataToString(data.svg);
-      const fullPath = exportPath
-        ? `${exportPath}/${fileName}`
-        : `public/svgs/${fileName}`;
-      svgFiles[fullPath] = svgString;
-    }
-
     const formData = new FormData();
     formData.append('branch', branch);
     formData.append('message', 'svg 생성');
 
-    Object.entries(svgFiles).forEach(([filepath, svgContent]) => {
-      const blob = new Blob([svgContent], { type: 'image/svg+xml' });
-      formData.append(filepath, blob, filepath);
-    });
+    // svgFiles 객체 생성과 formData 추가를 한번에 처리
+    for (const [filename, data] of Object.entries(svgs)) {
+      const fileName = this.formatFileName(filename);
+      const fullPath = exportPath
+        ? `${exportPath}/${fileName}`
+        : `public/svgs/${fileName}`;
 
+      try {
+        const blob = new Blob([data.svg], { type: 'image/svg+xml' });
+        formData.append(fullPath, blob, fileName);
+      } catch (error) {
+        console.error(`Error processing file ${fileName}:`, error);
+      }
+    }
     const commitResponse = await fetch(
       `https://api.bitbucket.org/2.0/repositories/${this.workspace}/${repositoryName}/src`,
       {

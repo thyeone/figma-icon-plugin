@@ -1,17 +1,18 @@
 export const findAllComponentNode = (rootNode: SceneNode) => {
   const components: ComponentNode[] = [];
+  const queue: SceneNode[] = [rootNode];
 
-  function findComponentNode(node: SceneNode) {
+  while (queue.length > 0) {
+    const node = queue.shift()!;
+
     if (isComponentNode(node)) {
       components.push(node);
-      return;
     }
 
     if ('children' in node) {
-      node.children.forEach(findComponentNode);
+      queue.push(...node.children);
     }
   }
-  findComponentNode(rootNode);
 
   return components;
 };

@@ -2,7 +2,7 @@ export type SvgByName = { [id: string]: SvgData };
 
 type SvgData = {
   id: string;
-  svg: Uint8Array;
+  svg: string;
 };
 
 export interface ExtractIconPluginMessage {
