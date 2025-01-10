@@ -10,6 +10,7 @@ yarn build
 ``` bash
 Plugins > Development > Import plugin from manifest 
 ```
+<br />
 
 > [!CAUTION]
 > When creating the Commit, 400 errors occurred when the Content-Length was 458962 (approximately 450kb) exceeded the maximum capacity.
