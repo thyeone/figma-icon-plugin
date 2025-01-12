@@ -18,5 +18,8 @@ yarn build
 ``` bash
 Plugins > Development > Import plugin from manifest 
 ```
-<br />
+
+## Demo
+https://github.com/user-attachments/assets/2a4f8433-c227-4961-909e-0b55231d30fe
+
 
