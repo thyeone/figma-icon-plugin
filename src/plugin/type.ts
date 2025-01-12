@@ -15,8 +15,10 @@ export interface ExtractIconPluginMessage {
 export interface GetTokenPluginMessage {
   type: 'getToken';
   payload: {
-    figmaToken?: string;
     bitbucketToken?: string;
+    exportPath?: string;
+    username?: string;
+    repositoryName?: string;
   };
 }
 
@@ -30,6 +32,10 @@ export interface ExtractUIMessage {
 
 export interface GetTokenUIMessage {
   type: 'getToken';
+}
+
+export interface StoredDataLoadedUIMessage {
+  type: 'storedDataLoaded';
 }
 
 export interface SetTokenUIMessage {
