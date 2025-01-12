@@ -5,6 +5,10 @@
 > When creating the Commit, 400 errors occurred when the Content-Length was 458962 (approximately 450kb) exceeded the maximum capacity. Excessive capacity seems to cause an error.
 
 
+> [!Tip]
+> [svgr-transform](https://github.com/thyeone/svgr-transform)과 조합해서 사용하면 편리합니다. 소스코드를 참고해주세요.
+
+
 ## Usage
 ### 1. Build
 ``` bash
