@@ -7,7 +7,8 @@ import type {
 import { findAllComponentNode } from './utils';
 
 figma.showUI(__html__, {
-  height: 330,
+  width: 380,
+  height: 385,
 });
 
 async function extractIcon() {

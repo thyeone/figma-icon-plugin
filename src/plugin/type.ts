@@ -19,6 +19,7 @@ export interface GetTokenPluginMessage {
     exportPath?: string;
     username?: string;
     repositoryName?: string;
+    targetBranch?: string;
   };
 }
 

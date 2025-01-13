@@ -19,39 +19,44 @@ type CreateCommitParams = {
 };
 
 type CreatePullRequestParams = {
-  repositoryName: string;
-  username: string;
   sourceBranch: string;
   title?: string;
   description?: string;
-  token: string;
 };
 
 class BitbucketApi {
-  private workspace: string = 'diffrag';
+  private readonly workspace: string = 'diffrag';
+  private readonly branch: string = `svg/${dayjs().format(
+    'YYYY-MM-DD-HHmmss',
+  )}`;
+
+  constructor(
+    private readonly targetBranch: string,
+    private readonly username: string,
+    private readonly repositoryName: string,
+    private readonly token: string,
+    private readonly exportPath: string = 'public/svgs',
+  ) {}
 
   private formatFileName(id: string): string {
     return `${id.replace('=', '-')}.svg`;
   }
 
-  public async createBranch({
-    repositoryName,
-    username,
-    branch = `svg/${dayjs().format('YYYY-MM-DD-HHmmss')}`,
-    token,
-  }: createBranchParams): Promise<{ name: string }> {
+  public async createBranch(): Promise<{
+    name: string;
+  }> {
     const response = await fetch(
-      `https://api.bitbucket.org/2.0/repositories/${this.workspace}/${repositoryName}/refs/branches`,
+      `https://api.bitbucket.org/2.0/repositories/${this.workspace}/${this.repositoryName}/refs/branches`,
       {
         method: 'POST',
         headers: {
-          Authorization: `Basic ${btoa(`${username}:${token}`)}`,
+          Authorization: `Basic ${btoa(`${this.username}:${this.token}`)}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          name: branch,
+          name: this.branch,
           target: {
-            hash: 'main',
+            hash: this.targetBranch,
           },
         }),
       },
@@ -61,19 +66,13 @@ class BitbucketApi {
       throw new Error('Failed to create branch');
     }
 
-    const data = await response.json();
-
-    return data;
+    return await response.json();
   }
 
   public async createCommitWithSvg({
-    repositoryName,
-    exportPath,
-    username,
     branch,
-    token,
     svgs,
-  }: CreateCommitParams): Promise<{
+  }: Pick<CreateCommitParams, 'svgs' | 'branch'>): Promise<{
     sourceBranch: string;
     success: boolean;
   }> {
@@ -81,12 +80,9 @@ class BitbucketApi {
     formData.append('branch', branch);
     formData.append('message', 'svg 생성');
 
-    // svgFiles 객체 생성과 formData 추가를 한번에 처리
     for (const [filename, data] of Object.entries(svgs)) {
       const fileName = this.formatFileName(filename);
-      const fullPath = exportPath
-        ? `${exportPath}/${fileName}`
-        : `public/svgs/${fileName}`;
+      const fullPath = `${this.exportPath}/${fileName}`;
 
       try {
         const blob = new Blob([data.svg], { type: 'image/svg+xml' });
@@ -95,27 +91,25 @@ class BitbucketApi {
         console.error(`Error processing file ${fileName}:`, error);
       }
     }
+
     const commitResponse = await fetch(
-      `https://api.bitbucket.org/2.0/repositories/${this.workspace}/${repositoryName}/src`,
+      `https://api.bitbucket.org/2.0/repositories/${this.workspace}/${this.repositoryName}/src`,
       {
         method: 'POST',
         headers: {
-          Authorization: `Basic ${btoa(`${username}:${token}`)}`,
+          Authorization: `Basic ${btoa(`${this.username}:${this.token}`)}`,
         },
         body: formData,
       },
     );
 
     return {
-      sourceBranch: branch,
+      sourceBranch: this.branch,
       success: commitResponse.ok,
     };
   }
 
   public async createPullRequest({
-    repositoryName,
-    username,
-    token,
     sourceBranch,
     title = `피그마에서 SVG 파일 추출 ${dayjs().format('YYYY-MM-DD-H:mm')}`,
     description = `피그마에서 SVG 파일 추출 ${dayjs().format(
@@ -123,11 +117,11 @@ class BitbucketApi {
     )}`,
   }: CreatePullRequestParams): Promise<BitbucketPullRequest> {
     const response = await fetch(
-      `https://api.bitbucket.org/2.0/repositories/${this.workspace}/${repositoryName}/pullrequests`,
+      `https://api.bitbucket.org/2.0/repositories/${this.workspace}/${this.repositoryName}/pullrequests`,
       {
         method: 'POST',
         headers: {
-          Authorization: `Basic ${btoa(`${username}:${token}`)}`,
+          Authorization: `Basic ${btoa(`${this.username}:${this.token}`)}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
@@ -140,7 +134,7 @@ class BitbucketApi {
           },
           destination: {
             branch: {
-              name: 'main',
+              name: this.targetBranch,
             },
           },
         }),
@@ -151,8 +145,7 @@ class BitbucketApi {
       throw new Error('Failed to create pull request');
     }
 
-    const data = await response.json();
-    return data;
+    return await response.json();
   }
 }
 

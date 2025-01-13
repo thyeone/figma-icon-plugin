@@ -9,6 +9,7 @@ type ProgressProps = {
   repositoryName: string;
   bitbucketToken: string;
   exportPath: string;
+  targetBranch: string;
   onError: VoidFunction;
 };
 
@@ -23,6 +24,7 @@ export default function Progress({
   username,
   repositoryName,
   exportPath,
+  targetBranch,
   onError,
 }: ProgressProps) {
   const [progress, setProgress] = useState(0);
@@ -32,37 +34,32 @@ export default function Progress({
   useEffect(() => {
     window.onmessage = async (event: MessageEvent<PluginMessage>) => {
       const { type, payload } = event.data.pluginMessage;
-      const bitbucketApi = new BitbucketApi();
+      const bitbucketApi = new BitbucketApi(
+        targetBranch,
+        username,
+        repositoryName,
+        bitbucketToken,
+        exportPath,
+      );
 
       console.log(payload, 'payload');
 
       setProgress((prev) => prev + 30);
 
       try {
-        const branch = await bitbucketApi.createBranch({
-          repositoryName,
-          token: bitbucketToken,
-          username,
-        });
+        const branch = await bitbucketApi.createBranch();
 
         setProgress((prev) => prev + 30);
 
         const { sourceBranch, success } =
           await bitbucketApi.createCommitWithSvg({
-            repositoryName,
-            token: bitbucketToken,
-            username,
             branch: branch.name,
             svgs: type === 'extractIcon' ? payload.svgByName : {},
-            exportPath,
           });
 
         if (success) {
           setProgress((prev) => prev + 25);
           const { links } = await bitbucketApi.createPullRequest({
-            repositoryName,
-            token: bitbucketToken,
-            username,
             sourceBranch,
           });
 
