@@ -1,4 +1,4 @@
-import { InfoIcon, ViewIcon, ViewOffIcon } from '@chakra-ui/icons';
+import { InfoIcon, ViewIcon, ViewOffIcon, WarningIcon } from '@chakra-ui/icons';
 import {
   Box,
   Button,
@@ -81,9 +81,30 @@ export default function Home() {
   useEffect(() => {
     if (isError) {
       toast({
-        title: '에러가 발생했어요.',
+        title: '에러가 발생했어요.2',
         position: 'top',
         status: 'error',
+        render: () => (
+          <Flex
+            align="center"
+            h="36px"
+            px="16px"
+            backgroundColor="red.500"
+            rounded="md"
+            gap="4px"
+            w="100%"
+            maxW="230px"
+            position="fixed"
+            top="8px"
+            mx="auto"
+            insetX={0}
+          >
+            <WarningIcon fontSize="12px" color="white" />
+            <Text fontSize="12px" fontWeight="medium" color="white">
+              에러가 발생했어요.
+            </Text>
+          </Flex>
+        ),
       });
     }
   }, [isError]);
