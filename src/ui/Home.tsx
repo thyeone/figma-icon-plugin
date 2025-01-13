@@ -81,7 +81,7 @@ export default function Home() {
   useEffect(() => {
     if (isError) {
       toast({
-        title: '에러가 발생했어요.2',
+        title: '에러가 발생했어요.',
         position: 'top',
         status: 'error',
         render: () => (
