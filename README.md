@@ -20,6 +20,7 @@ Plugins > Development > Import plugin from manifest
 ```
 
 ## Demo
-https://github.com/user-attachments/assets/2a4f8433-c227-4961-909e-0b55231d30fe
+<img src="https://github.com/user-attachments/assets/49c61acc-8c0e-4728-9f85-88506e5b7ef7" width="800px"/>
+
 
 
