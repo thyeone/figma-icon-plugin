@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import type { PluginMessage } from '../plugin/type';
 import BitbucketApi from '../shared/bitbucketApi';
 import { useNavigate } from 'react-router-dom';
+import { ExtractType } from './Home';
 
 type ProgressProps = {
   username: string;
@@ -11,6 +12,7 @@ type ProgressProps = {
   exportPath: string;
   targetBranch: string;
   onError: VoidFunction;
+  extractType: ExtractType;
 };
 
 const PROGRESS_TEXT = {
@@ -19,7 +21,13 @@ const PROGRESS_TEXT = {
   85: '🚚 풀리퀘스트를 생성하는 중...',
 };
 
+const DIRECT_PROGRESS_TEXT = {
+  30: '🔗 커밋을 생성하는 중...',
+  60: '🚚 푸시하는 중...',
+};
+
 export default function Progress({
+  extractType,
   bitbucketToken,
   username,
   repositoryName,
@@ -47,24 +55,39 @@ export default function Progress({
       setProgress((prev) => prev + 30);
 
       try {
-        const branch = await bitbucketApi.createBranch();
+        if (extractType === ExtractType.PR) {
+          const branch = await bitbucketApi.createBranch();
 
-        setProgress((prev) => prev + 30);
+          setProgress((prev) => prev + 30);
 
-        const { sourceBranch, success } =
-          await bitbucketApi.createCommitWithSvg({
-            branch: branch.name,
-            svgs: type === 'extractIcon' ? payload.svgByName : {},
-          });
+          const { sourceBranch, success } =
+            await bitbucketApi.createCommitWithSvg({
+              branch: branch.name,
+              svgs: type === 'extractIcon' ? payload.svgByName : {},
+            });
 
-        if (success) {
-          setProgress((prev) => prev + 25);
-          const { links } = await bitbucketApi.createPullRequest({
-            sourceBranch,
-          });
+          if (success) {
+            setProgress((prev) => prev + 25);
+            const { links } = await bitbucketApi.createPullRequest({
+              sourceBranch,
+            });
 
-          if (links.html.href) {
-            navigate('/success', { state: links.html.href });
+            if (links.html.href) {
+              navigate('/success', { state: links.html.href });
+            }
+          }
+        }
+
+        if (extractType === ExtractType.DIRECT) {
+          const { success, branchName } =
+            await bitbucketApi.pushDirectlyToTargetBranch({
+              svgs: type === 'extractIcon' ? payload.svgByName : {},
+            });
+
+          setProgress((prev) => prev + 30);
+
+          if (success) {
+            navigate('/success');
           }
         }
       } catch (error) {
@@ -83,7 +106,9 @@ export default function Progress({
         rounded="sm"
       />
       <Text fontSize="12px">
-        {PROGRESS_TEXT[progress as keyof typeof PROGRESS_TEXT]}
+        {extractType === ExtractType.PR
+          ? PROGRESS_TEXT[progress as keyof typeof PROGRESS_TEXT]
+          : DIRECT_PROGRESS_TEXT[progress as keyof typeof DIRECT_PROGRESS_TEXT]}
       </Text>
     </Stack>
   );

@@ -13,6 +13,11 @@ import React, { useEffect, useState } from 'react';
 import { PluginMessage } from '../plugin/type';
 import Progress from './Progress';
 
+export enum ExtractType {
+  PR,
+  DIRECT,
+}
+
 enum Step {
   Pending,
   Processing,
@@ -30,6 +35,7 @@ export default function Home() {
 
   const [step, setStep] = useState(Step.Pending);
   const [isError, setIsError] = useState(false);
+  const [extractType, setExtractType] = useState(ExtractType.PR);
 
   const toast = useToast({
     containerStyle: {
@@ -38,11 +44,15 @@ export default function Home() {
     },
   });
 
-  const handleSubmit = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleSubmit = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    type: ExtractType,
+  ) => {
     e.preventDefault();
 
     setIsError(false);
     setStep(Step.Processing);
+    setExtractType(type);
 
     parent.postMessage({ pluginMessage: { type: 'extract' } }, '*');
 
@@ -212,19 +222,28 @@ export default function Home() {
         입력한 모든 값들은 추출 후 로컬 스토리지에 저장됩니다.
       </Text>
       {step === Step.Pending && (
-        <Flex justify="flex-end" mt="12px">
+        <Flex justify="flex-end" gap={1} mt="12px">
           <Button
             type="button"
             size="xs"
             colorScheme="blue"
-            onClick={handleSubmit}
+            onClick={(e) => handleSubmit(e, ExtractType.PR)}
           >
-            추출하기
+            PR로 추출
+          </Button>
+          <Button
+            type="button"
+            size="xs"
+            colorScheme="blue"
+            onClick={(e) => handleSubmit(e, ExtractType.DIRECT)}
+          >
+            브랜치로 푸시
           </Button>
         </Flex>
       )}
       {step === Step.Processing && (
         <Progress
+          extractType={extractType}
           bitbucketToken={bitbucketToken}
           username={username}
           repositoryName={repositoryName}

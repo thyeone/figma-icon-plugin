@@ -17,19 +17,21 @@ export default function Success() {
       <Text align="center" fontSize="sm" fontWeight={500}>
         아이콘 추출 성공!
       </Text>
-      <Link
-        fontSize="sm"
-        display="flex"
-        alignItems="center"
-        mt="2px"
-        href={url}
-        color="blue.600"
-        textDecoration="underline"
-        textDecorationColor="blue.600"
-        isExternal
-      >
-        PR 링크
-      </Link>
+      {url && (
+        <Link
+          fontSize="sm"
+          display="flex"
+          alignItems="center"
+          mt="2px"
+          href={url}
+          color="blue.600"
+          textDecoration="underline"
+          textDecorationColor="blue.600"
+          isExternal
+        >
+          PR 링크
+        </Link>
+      )}
       <Button size="sm" mt={6} onClick={() => navigate('/')}>
         선택 단계로
       </Button>
