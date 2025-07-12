@@ -20,7 +20,14 @@ Plugins > Development > Import plugin from manifest
 ```
 
 ## Demo
+
+### 1. Create Pull Request
 <img src="https://github.com/user-attachments/assets/49c61acc-8c0e-4728-9f85-88506e5b7ef7" width="800px"/>
+
+
+### 2. Direct Push To Target Branch
+![화면 기록 2025-07-12 오후 8 31 11](https://github.com/user-attachments/assets/d13c9d4f-1bf1-4305-92d3-a6b3ef9c2789)
+
 
 
 
